@@ -1,0 +1,64 @@
+apply plugin: 'groovy'
+apply plugin: 'codenarc'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven { url "http://maven.springframework.org/release" }
+}
+
+dependencies {
+
+	final SPRING_VERSION = '3.1.1.RELEASE'
+	final BATCH_VERSION = '2.1.8.RELEASE'
+	final SPOCK_VERSION = '0.6-groovy-1.8'
+	final SLF4J_VERSION = '1.6.4'
+
+	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.8.6'
+
+	// Spring Batch on top of Spring 3.1 
+	// (latest version wins in conflict resolution)
+	compile group: 'org.springframework.batch', name: 'spring-batch-infrastructure', version: BATCH_VERSION
+	compile group: 'org.springframework', name: 'spring-tx', version: SPRING_VERSION
+	compile group: 'cglib', name: 'cglib-nodep', version: '2.2.2'
+	
+	// for whatever #$%^% reason you need to download datomic manually and install into your local maven Repo
+	compile group: 'com.datomic', name: 'datomic', version: '0.1.2753' 
+	
+//	logging spring cleaning - use slf4j instead of commons-logging	
+	runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: SLF4J_VERSION
+	runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.1'
+	compile group: 'org.slf4j', name: 'slf4j-api', version: SLF4J_VERSION
+	
+	testCompile group: 'org.spockframework', name: 'spock-core', version: SPOCK_VERSION
+	testCompile group: 'org.spockframework', name: 'spock-spring', version: SPOCK_VERSION
+	testCompile group: 'org.springframework', name: 'spring-test', version: SPRING_VERSION
+	
+}
+
+configurations {
+	all*.exclude module: 'commons-logging' // we use slf4j instead
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '1.0-milestone-9'
+}
+
+codenarc {
+	toolVersion = '0.17'
+	configFile = new File("${project.projectDir.absolutePath}/gradle/codenarc/ruleset.groovy")
+	
+	// consumed by Jenkins Violations plugin
+	reportFormat = 'xml'
+	
+	// don't let codenarc violations fail the build
+	tasks.withType(CodeNarc).all { codeNarcTask ->
+		codeNarcTask.ignoreFailures = true
+	}
+}
+
+// works but pollutes the gradle output with warnings, disabled until its ready for prime time
+//apply from: 'https://github.com/valkolovos/gradle_cobertura/raw/master/repo/gradle_cobertura/gradle_cobertura/1.0/coberturainit.gradle'
+//cobertura {
+//	coverageSourceDirs = [project.sourceSets.main.groovy.srcDirs] as Set
+//}
