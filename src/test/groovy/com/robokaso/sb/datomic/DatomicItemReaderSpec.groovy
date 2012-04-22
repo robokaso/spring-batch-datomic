@@ -39,4 +39,9 @@ class DatomicItemReaderSpec extends Specification {
 		then:
 			results.size() == 150
 	}
+	
+	def cleanupSpec() {
+//		conn.close()	//abstract method exception?!
+		conn = null
+	}
 }
