@@ -1,5 +1,7 @@
 package com.robokaso.sb.datomic
 
+import org.springframework.batch.item.ExecutionContext
+
 import groovy.util.logging.Slf4j;
 import datomic.Connection
 import datomic.Peer
@@ -32,6 +34,12 @@ class DatomicItemReaderSpec extends Specification {
 		assert conn.transact(dataTx).get()
 		
 	}
+	
+	def cleanupSpec() {
+//		conn.close()	//abstract method exception?!
+		conn = null
+	}
+	
 	def placeholder() {
 		
 		when:
@@ -40,8 +48,31 @@ class DatomicItemReaderSpec extends Specification {
 			results.size() == 150
 	}
 	
-	def cleanupSpec() {
-//		conn.close()	//abstract method exception?!
-		conn = null
+	def 'read communities'() {
+		
+		given:
+			def reader = new DatomicItemReader(
+				name: 'datomicReader',
+				query: 	"[:find ?c :where [?c :community/name]]",
+				dbUri: DB_URI
+				)
+			reader.afterPropertiesSet()
+			
+			def ctx = new ExecutionContext()
+			reader.open(ctx)
+			
+		when:
+			def entity = reader.read()
+			
+		then:
+			def communityName = entity.get(":community/name")
+			println communityName
+			
+		when:
+			reader.close()
+			
+		then:
+			true
 	}
+	
 }
