@@ -53,7 +53,8 @@ class DatomicItemReaderSpec extends Specification {
 		given:
 			def reader = new DatomicItemReader(
 				name: 'datomicReader',
-				query: 	"[:find ?c :where [?c :community/name]]",
+				query: 	'[:find ?c :in $ ?t :where [?c :community/type ?t]]',
+				args: [':community.type/facebook-page'],
 				dbUri: DB_URI
 				)
 			reader.afterPropertiesSet()
@@ -62,9 +63,11 @@ class DatomicItemReaderSpec extends Specification {
 			reader.open(ctx)
 			
 		when:
-			def entity = reader.read()
+			List<Object> record = reader.read()
 			
 		then:
+			record.size() == 1
+			def entity = conn.db().entity(record.get(0))
 			def communityName = entity.get(":community/name")
 			println communityName
 			

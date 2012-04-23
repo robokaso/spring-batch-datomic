@@ -1,5 +1,7 @@
 package com.robokaso.sb.datomic
 
+import java.util.Collection;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
@@ -15,7 +17,7 @@ import datomic.Peer
  *
  * @param <T> type of item
  */
-class DatomicItemReader extends AbstractItemCountingItemStreamItemReader<Entity> {
+class DatomicItemReader extends AbstractItemCountingItemStreamItemReader<List<Object>> {
 
 	/**
 	 * URI of a Datomic database
@@ -24,24 +26,23 @@ class DatomicItemReader extends AbstractItemCountingItemStreamItemReader<Entity>
 	
 	String query
 	
+	List args = []
+	
 	private Connection conn
 	
 	private Iterator<List<Object>> dataIterator
 	
 	@Override
-	protected Entity doRead() {
-		def id = dataIterator.next().get(0)
-		def entity = conn.db().entity(id)
-		
-		entity
+	protected List<Object> doRead() {
+		dataIterator.next()
 	}
 
 	@Override
 	protected void doOpen() {
 		conn = Peer.connect(dbUri)
-		dataIterator = Peer.q("[:find ?c :where [?c :community/name]]", conn.db()).iterator()
+		dataIterator = Peer.q(query, ([conn.db()] + args) as Object[]).iterator()
 	}
-
+	
 	@Override
 	protected void doClose() {
 //		conn.close() //AbstractMethodError - datomic bug?
