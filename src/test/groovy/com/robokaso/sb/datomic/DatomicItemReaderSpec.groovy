@@ -69,7 +69,7 @@ class DatomicItemReaderSpec extends Specification {
 			record.size() == 1
 			def entity = conn.db().entity(record.get(0))
 			def communityName = entity.get(":community/name")
-			println communityName
+			log.info communityName
 			
 		when:
 			reader.close()
