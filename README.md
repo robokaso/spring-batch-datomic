@@ -23,7 +23,9 @@ Then you can run the tests:
 	
 Once this project is ready for prime time I'll publish it in a maven repository somewhere.
 
+<!---
 CI
 ----
 
 check whether the the code works [here](https://robokasofoss.ci.cloudbees.com/job/spring-batch-datomic/)
+-->
