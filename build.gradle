@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
 
-	final SPRING_VERSION = '3.1.1.RELEASE'
+	final SPRING_VERSION = '3.1.2.RELEASE'
 	final BATCH_VERSION = '2.1.8.RELEASE'
 	final SPOCK_VERSION = '0.6-groovy-1.8'
 	final SLF4J_VERSION = '1.6.4'
@@ -23,7 +23,7 @@ dependencies {
 	compile group: 'cglib', name: 'cglib-nodep', version: '2.2.2'
 	
 	// for whatever #$%^% reason you need to download datomic manually and install into your local maven Repo
-	compile group: 'com.datomic', name: 'datomic', version: '0.1.3065' 
+	compile group: 'com.datomic', name: 'datomic', version: '0.1.3164' 
 	
 //	logging spring cleaning - use slf4j instead of commons-logging	
 	runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: SLF4J_VERSION
