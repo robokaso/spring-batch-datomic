@@ -5,6 +5,7 @@ repositories {
 	mavenLocal()
 	mavenCentral()
 	maven { url "http://maven.springframework.org/release" }
+	maven { url "http://files.couchbase.com/maven2/" }
 }
 
 dependencies {
@@ -23,7 +24,7 @@ dependencies {
 	compile group: 'cglib', name: 'cglib-nodep', version: '2.2.2'
 	
 	// for whatever #$%^% reason you need to download datomic manually and install into your local maven Repo
-	compile group: 'com.datomic', name: 'datomic-free', version: '0.8.3343' 
+//	compile group: 'com.datomic', name: 'datomic-free', version: '0.8.3343' 
 	
 //	logging spring cleaning - use slf4j instead of commons-logging	
 	runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: SLF4J_VERSION
@@ -34,6 +35,9 @@ dependencies {
 	testCompile group: 'org.spockframework', name: 'spock-spring', version: SPOCK_VERSION
 	testCompile group: 'org.springframework', name: 'spring-test', version: SPRING_VERSION
 	
+	// datomic is not in the public repos yet
+	compile fileTree(dir: 'gradle/datomic-lib', include: '*.jar')
+	
 }
 
 configurations {
@@ -41,7 +45,7 @@ configurations {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0'
+	gradleVersion = '1.1'
 }
 
 codenarc {
